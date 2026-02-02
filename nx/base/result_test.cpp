@@ -20,11 +20,6 @@
 
 #include <gtest/gtest.h>
 
-enum Error : uint32_t {
-  TYPE_1,
-  TYPE_2
-};
-
 class MovableType {
  public:
   explicit MovableType(int a) : a_(a) {}
@@ -40,22 +35,22 @@ class MovableType {
 };
 
 TEST(ResultTest, API) {
-  nx::Result<uint64_t, Error> success(123);
+  nx::Result<uint64_t> success(123);
   ASSERT_TRUE(static_cast<bool>(success));
   ASSERT_TRUE(success);
   ASSERT_TRUE(success.has_value());
   ASSERT_FALSE(success.is_error());
   ASSERT_EQ(success.value(), 123);
 
-  nx::Result<uint64_t, Error> failure(Error::TYPE_1);
+  nx::Result<uint64_t> failure(nx::ErrorCode::FILE_NOT_FOUND);
   ASSERT_FALSE(static_cast<bool>(failure));
   ASSERT_FALSE(failure);
   ASSERT_FALSE(failure.has_value());
   ASSERT_TRUE(failure.is_error());
-  ASSERT_EQ(failure.error(), Error::TYPE_1);
+  ASSERT_EQ(failure.error().code(), nx::ErrorCode::FILE_NOT_FOUND);
 
   MovableType mt(321);
-  nx::Result<MovableType, Error> mt_success(std::move(mt));
+  nx::Result<MovableType> mt_success(std::move(mt));
   ASSERT_TRUE(static_cast<bool>(mt_success));
   ASSERT_TRUE(mt_success);
   ASSERT_TRUE(mt_success.has_value());

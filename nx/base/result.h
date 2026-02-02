@@ -22,13 +22,15 @@
 #include <expected>
 #include <string>
 
+#include "nx/base/error.h"
+
 namespace nx {
 
 /// A type which is convenience over std::expected.
 ///
 /// This is much less restricted type as compare to std::expected. We want this
 /// type to be purely used as a function/method return value.
-template <typename V, typename E>
+template <typename V>
 class Result {
  public:
   /// Construct a successful result by copying the value.
@@ -38,7 +40,7 @@ class Result {
   Result(V &&v) : val_or_error_(std::move(v)) {}
 
   /// Construct an error result.
-  Result(const E &e) : val_or_error_(std::unexpected(e)) {}
+  Result(const Error &e) : val_or_error_(std::unexpected(e)) {}
 
   /// Check if the object represents a successful result.
   ///
@@ -62,10 +64,10 @@ class Result {
   V &value() { return val_or_error_.value(); }
 
   /// Return the error value.
-  E &error() { return val_or_error_.error(); }
+  Error &error() { return val_or_error_.error(); }
 
  private:
-  std::expected<V, E> val_or_error_;
+  std::expected<V, Error> val_or_error_;
 };
 
 /// A type to return a boolean value along with string message.

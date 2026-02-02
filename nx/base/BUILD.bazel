@@ -1,6 +1,7 @@
 cc_library(
     name = "base_hdrs",
     hdrs = [
+        "error.h",
         "result.h",
     ],
     visibility = ["//visibility:public"],

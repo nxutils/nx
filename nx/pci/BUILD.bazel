@@ -1,0 +1,21 @@
+cc_library(
+    name = "pci_hdrs",
+    hdrs = [
+        "pci.h",
+        "cap_id.h",
+        "class_code.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "pci",
+    srcs = [
+        "pci.cpp",
+    ],
+    deps = [
+        ":pci_hdrs",
+        "//nx/base"
+    ],
+    visibility = ["//visibility:public"],
+)

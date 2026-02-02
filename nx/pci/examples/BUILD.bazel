@@ -1,0 +1,23 @@
+cc_binary(
+    name = "load",
+    srcs = ["load.cpp"],
+    deps = [
+      "//nx/pci",
+    ],
+)
+
+cc_binary(
+    name = "read_ecap",
+    srcs = ["read_ecap.cpp"],
+    deps = [
+      "//nx/pci",
+    ],
+)
+
+cc_binary(
+    name = "write_ecap32",
+    srcs = ["write_ecap32.cpp"],
+    deps = [
+      "//nx/pci",
+    ],
+)
