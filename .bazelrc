@@ -1,0 +1,5 @@
+startup --output_base=.bazel.out
+common --lockfile_mode=off
+common --enable_bzlmod
+test --test_output=errors
+build --copt="-D_GNU_SOURCE"

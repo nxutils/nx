@@ -1,0 +1,25 @@
+cc_library(
+    name = "base_hdrs",
+    hdrs = [
+        "result.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "base",
+    deps = [
+        ":base_hdrs",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "result_test",
+    srcs = ["result_test.cpp"],
+    deps = [
+        ":base",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)

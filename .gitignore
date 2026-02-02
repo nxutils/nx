@@ -1,0 +1,5 @@
+.bazel.out
+bazel-bin
+bazel-nx
+bazel-out
+bazel-testlogs
