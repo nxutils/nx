@@ -93,7 +93,7 @@ class Device {
   /// Return the bus number.
   uint8_t bus() const { return bus_; }
 
-  /// Return the device numbers.
+  /// Return the device number.
   uint8_t device() const { return device_; }
 
   /// Return the function number.
@@ -120,7 +120,7 @@ class Device {
   /// Return the BDF string for this device.
   std::string GetBdfString() const;
 
-  /// Return true is this device has the normal capabilities list.
+  /// Return true if this device has the normal capabilities list.
   bool HasCapabilitiesList() const;
 
   /// Return the list of normal capabilities supported by the device.

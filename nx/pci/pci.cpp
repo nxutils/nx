@@ -242,10 +242,10 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
     cap.offset = next_pointer;
     // The capability data is after the header - header is two bytes, one byte
     // for the capability ID (read into cap_id above), and one byte for the next
-    // capability pointer (read into next_pointer below). 
+    // capability pointer (read into next_pointer below).
     //
-    // If represented as a C data structure, the extended capability header will
-    // have the following layout.
+    // If represented as a C data structure, the capability header will have the
+    // following layout.
     //
     // struct {
     //   uint8_t cap_id;
@@ -373,7 +373,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
       std::ostringstream msgstream;
       msgstream << "Error reading next pointer of capability ID "
                 << std::hex << "0x" << static_cast<uint32_t>(current_cap_id)
-                << " ("  << GetECapIdDescription(cap_id) << ") in "
+                << " (" << GetECapIdDescription(current_cap_id) << ") in "
                 << config_path.native();
       return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
     }
@@ -387,22 +387,22 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
           std::ostringstream msgstream;
           msgstream << "Error seeking to specified offset of capability ID "
                     << std::hex << "0x" << static_cast<uint32_t>(current_cap_id)
-                    << " ("  << GetECapIdDescription(cap_id) << ") in "
+                    << " (" << GetECapIdDescription(current_cap_id) << ") in "
                     << config_path.native();
-         return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
-                      msgstream.str()};
+          return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+                       msgstream.str()};
         }
       }
-      
+
       config.read(reinterpret_cast<char *>(data.data()), data.size());
       if (config.fail()) {
         std::ostringstream msgstream;
         msgstream << "Error reading data of capability ID "
                   << std::hex << "0x" << static_cast<uint32_t>(current_cap_id)
-                  << " ("  << GetECapIdDescription(cap_id) << ") in "
+                  << " (" << GetECapIdDescription(current_cap_id) << ") in "
                   << config_path.native();
-       return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
-                    msgstream.str()};
+        return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+                     msgstream.str()};
       }
       return std::nullopt;
     }
@@ -448,7 +448,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
   auto &ecap = cap_or_error.value();
 
   auto config_path = GetConfigFilePath(domain_, bus_, device_, func_);
-  std::ofstream config(config_path, std::ios::binary | std::ios::out);
+  std::fstream config(config_path, std::ios::binary | std::ios::in | std::ios::out);
   if (!config.is_open()) {
     return Error{
         ErrorCode::PCI_ERROR_WRITING_CONFIG,
