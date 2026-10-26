@@ -1,0 +1,36 @@
+cc_library(
+    name = "ringbuffer",
+    hdrs = ["ringbuffer.h"],
+)
+
+cc_test(
+    name = "ringbuffer_test",
+    srcs = ["ringbuffer_test.cpp"],
+    deps = [
+        ":ringbuffer",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ringbuffer_large_functional_test",
+    srcs = ["ringbuffer_large_functional_test.cpp"],
+    deps = [
+        ":ringbuffer",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+    size = "large",
+)
+
+cc_test(
+    name = "ringbuffer_tsan_test",
+    srcs = ["ringbuffer_tsan_test.cpp"],
+    deps = [
+        ":ringbuffer",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+    size = "large",
+)
