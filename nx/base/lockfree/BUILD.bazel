@@ -1,7 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
-
 cc_library(
     name = "ringbuffer",
     hdrs = ["ringbuffer.h"],
@@ -37,4 +35,13 @@ cc_test(
         "@googletest//:gtest_main",
     ],
     size = "large",
+)
+
+cc_binary(
+    name = "ringbuffer_benchmark",
+    srcs = ["ringbuffer_benchmark.cpp"],
+    deps = [
+        ":ringbuffer",
+        "@google_benchmark//:benchmark",
+    ]
 )
