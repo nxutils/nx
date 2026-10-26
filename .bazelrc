@@ -1,5 +1,13 @@
-startup --output_base=.bazel.out
 common --lockfile_mode=off
 common --enable_bzlmod
 test --test_output=errors
 build --copt="-D_GNU_SOURCE"
+
+build:tsan --copt=-fsanitize=thread --copt=-O2
+build:tsan --linkopt=-fsanitize=thread
+
+build:asan --copt=-fsanitize=address
+build:asan --linkopt=-fsanitize=address
+
+build:msan --copt=-fsanitize=memory
+build:msan --linkopt=-fsanitize=memory
