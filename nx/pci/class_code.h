@@ -54,29 +54,29 @@ struct ClassCodeAndDescription {
 };
 
 constexpr ClassCodeAndDescription CLASS_CODE_DESCRIPTION[] = {
-  {ClassCode::UNCLASSIFIED_DEVICE, "Unclassified Device"},
-  {ClassCode::MASS_STORAGE_CONTROLLER, "Mass Storage Controller"},
-  {ClassCode::NETWORK_CONTROLLER, "Network Controller"},
-  {ClassCode::DISPLAY_CONTROLLER, "Display Controller"},
-  {ClassCode::MULTIMEDIA_CONTROLLER, "Multimedia Controller"},
-  {ClassCode::MEMORY_CONTROLLER, "Memory Controller"},
-  {ClassCode::BRIDGE, "Bridge"},
-  {ClassCode::COMMUNICATION_CONTROLLER, "Communication Controller"},
-  {ClassCode::GENERIC_SYSTEM_PERIPHERAL, "Generic System Peripheral"},
-  {ClassCode::INPUT_DEVICE_CONTROLLER, "Input Device Controller"},
-  {ClassCode::DOCKING_STATION, "Docking Station"},
-  {ClassCode::PROCESSOR, "Processor"},
-  {ClassCode::SERIAL_BUS_CONTROLLER, "Serial Bus Controller"},
-  {ClassCode::WIRELESS_CONTROLLER, "Wireless Controller"},
-  {ClassCode::INTELLIGENT_CONTROLLER, "Intelligent Controller"},
-  {ClassCode::SATELLITE_COMMUNICATIONS_CONTROLLER,
-   "Satellite Communications Controller"},
-  {ClassCode::ENCRYPTION_CONTROLLER, "Encryption Controller"},
-  {ClassCode::SIGNAL_PROCESSING_CONTROLLER, "Signal Processing Controller"},
-  {ClassCode::PROCESSING_ACCELERATORS, "Processing Accelerators"},
-  {ClassCode::NON_ESSENTIAL_INSTRUMENTATION, "Non-essential Instrumentation"},
-  {ClassCode::COPROCESSOR, "Coprocessor"},
-  {ClassCode::UNASSIGNED_CLASS, "Unassigned Class"},
+    {ClassCode::UNCLASSIFIED_DEVICE, "Unclassified Device"},
+    {ClassCode::MASS_STORAGE_CONTROLLER, "Mass Storage Controller"},
+    {ClassCode::NETWORK_CONTROLLER, "Network Controller"},
+    {ClassCode::DISPLAY_CONTROLLER, "Display Controller"},
+    {ClassCode::MULTIMEDIA_CONTROLLER, "Multimedia Controller"},
+    {ClassCode::MEMORY_CONTROLLER, "Memory Controller"},
+    {ClassCode::BRIDGE, "Bridge"},
+    {ClassCode::COMMUNICATION_CONTROLLER, "Communication Controller"},
+    {ClassCode::GENERIC_SYSTEM_PERIPHERAL, "Generic System Peripheral"},
+    {ClassCode::INPUT_DEVICE_CONTROLLER, "Input Device Controller"},
+    {ClassCode::DOCKING_STATION, "Docking Station"},
+    {ClassCode::PROCESSOR, "Processor"},
+    {ClassCode::SERIAL_BUS_CONTROLLER, "Serial Bus Controller"},
+    {ClassCode::WIRELESS_CONTROLLER, "Wireless Controller"},
+    {ClassCode::INTELLIGENT_CONTROLLER, "Intelligent Controller"},
+    {ClassCode::SATELLITE_COMMUNICATIONS_CONTROLLER,
+     "Satellite Communications Controller"},
+    {ClassCode::ENCRYPTION_CONTROLLER, "Encryption Controller"},
+    {ClassCode::SIGNAL_PROCESSING_CONTROLLER, "Signal Processing Controller"},
+    {ClassCode::PROCESSING_ACCELERATORS, "Processing Accelerators"},
+    {ClassCode::NON_ESSENTIAL_INSTRUMENTATION, "Non-essential Instrumentation"},
+    {ClassCode::COPROCESSOR, "Coprocessor"},
+    {ClassCode::UNASSIGNED_CLASS, "Unassigned Class"},
 };
 
 constexpr std::string_view GetClassCodeDescription(ClassCode code) {
@@ -88,6 +88,6 @@ constexpr std::string_view GetClassCodeDescription(ClassCode code) {
   return "Unknown Class Code";
 }
 
-} // namespace nx::pci
+}  // namespace nx::pci
 
-#endif // NX_PCI_CLASS_CODE_H__
+#endif  // NX_PCI_CLASS_CODE_H__

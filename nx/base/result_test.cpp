@@ -24,9 +24,7 @@ class MovableType {
  public:
   explicit MovableType(int a) : a_(a) {}
 
-  MovableType(MovableType &&other) : a_(other.a_) {
-    other.a_ = 0;
-  }
+  MovableType(MovableType &&other) : a_(other.a_) { other.a_ = 0; }
 
   int GetA() const { return a_; }
 

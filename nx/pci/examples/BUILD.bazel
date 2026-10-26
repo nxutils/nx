@@ -1,3 +1,5 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
 cc_binary(
     name = "load",
     srcs = ["load.cpp"],
@@ -6,6 +8,8 @@ cc_binary(
     ],
 )
 
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
 cc_binary(
     name = "read_ecap",
     srcs = ["read_ecap.cpp"],
@@ -13,6 +17,8 @@ cc_binary(
       "//nx/pci",
     ],
 )
+
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 cc_binary(
     name = "write_ecap32",

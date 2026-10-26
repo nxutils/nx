@@ -101,6 +101,6 @@ class BoolResult {
   std::string msg_;
 };
 
-} // namespace nx
+}  // namespace nx
 
-#endif // NX_BASE_RESULT_H__
+#endif  // NX_BASE_RESULT_H__

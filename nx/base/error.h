@@ -53,6 +53,6 @@ class Error {
   std::string msg_;
 };
 
-} // namespace nx
+}  // namespace nx
 
-#endif // NX_BASE_ERROR_H__
+#endif  // NX_BASE_ERROR_H__

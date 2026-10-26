@@ -27,7 +27,6 @@
 
 #include "nx/base/error.h"
 #include "nx/base/result.h"
-
 #include "nx/pci/cap_id.h"
 #include "nx/pci/class_code.h"
 
@@ -82,10 +81,8 @@ class Device {
   static nx::Result<std::unique_ptr<Device>> Load(const std::string &bdf);
 
   /// Load device using the given domain, bus, device and function numbers.
-  static nx::Result<std::unique_ptr<Device>> Load(uint32_t domain,
-                                                  uint8_t bus,
-                                                  uint8_t device,
-                                                  uint8_t func);
+  static nx::Result<std::unique_ptr<Device>> Load(uint32_t domain, uint8_t bus,
+                                                  uint8_t device, uint8_t func);
 
   /// Return the domain number.
   uint32_t domain() const { return domain_; }
@@ -164,6 +161,6 @@ class Device {
   uint8_t program_if_;
 };
 
-} // namespace nx::pci
+}  // namespace nx::pci
 
-#endif // NX_PCI_PCI_H__
+#endif  // NX_PCI_PCI_H__

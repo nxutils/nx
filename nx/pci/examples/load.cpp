@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
 
   auto device = std::move(device_or_error.value());
   auto class_code = device->class_code();
-  std::cout << "!!!! Successfully loaded PCI device !!!!\n" << std::hex
-            << "  Vendor ID: 0x" << device->vendor_id() << '\n'
+  std::cout << "!!!! Successfully loaded PCI device !!!!\n"
+            << std::hex << "  Vendor ID: 0x" << device->vendor_id() << '\n'
             << "  Device ID: 0x" << device->device_id() << '\n'
             << " Class Code: 0x" << static_cast<uint32_t>(class_code) << " - "
             << nx::pci::GetClassCodeDescription(class_code) << '\n'
@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
     std::cout << "List of normal capabilities:\n";
     auto &capabilities = caps_or_error.value();
     for (auto &cap : capabilities) {
-      std::cout << std::hex << "Offset: 0x" << cap.offset
-                << " ID: 0x" << static_cast<uint32_t>(cap.id) << " - "
+      std::cout << std::hex << "Offset: 0x" << cap.offset << " ID: 0x"
+                << static_cast<uint32_t>(cap.id) << " - "
                 << GetCapIdDescription(cap.id) << '\n';
     }
   }
@@ -75,9 +75,9 @@ int main(int argc, char *argv[]) {
   std::cout << "List of extended capabilities:\n";
   auto &extended_capabilities = extended_caps_or_error.value();
   for (auto &ecap : extended_capabilities) {
-    std::cout << std::hex << "Offset: 0x" << ecap.offset
-              << " ID: 0x" << static_cast<uint32_t>(ecap.id) << " [v"
-              << std::dec << static_cast<uint32_t>(ecap.version) << "] - "
+    std::cout << std::hex << "Offset: 0x" << ecap.offset << " ID: 0x"
+              << static_cast<uint32_t>(ecap.id) << " [v" << std::dec
+              << static_cast<uint32_t>(ecap.version) << "] - "
               << GetECapIdDescription(ecap.id) << '\n';
   }
 
