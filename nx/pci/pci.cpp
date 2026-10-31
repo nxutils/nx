@@ -83,7 +83,7 @@ std::filesystem::path GetConfigFilePath(uint32_t domain, uint8_t bus,
 
 namespace nx::pci {
 
-nx::Result<std::unique_ptr<Device>> Device::Load(const std::string &bdf) {
+nx::Result<std::unique_ptr<Device>> Device::Load(const std::string& bdf) {
   size_t first_colon = bdf.find(":");
   if (first_colon < 4 || first_colon > 5) {
     return Error{ErrorCode::PCI_INVALID_DOMAIN_NUMBER,
@@ -155,26 +155,26 @@ nx::Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
   // We read the first 16 bytes from the config file - This is enough to gather
   // all of the information we need at this point.
   uint8_t config_data[16];
-  config.read(reinterpret_cast<char *>(config_data), sizeof(config_data));
+  config.read(reinterpret_cast<char*>(config_data), sizeof(config_data));
   if (config.fail()) {
     return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
                  "Error reading config file for " + bdf_string};
   }
   config.close();
 
-  pci_device->vendor_id_ = *reinterpret_cast<uint16_t *>(
+  pci_device->vendor_id_ = *reinterpret_cast<uint16_t*>(
       config_data + static_cast<int>(ConfigByteOffset::VENDOR_ID));
-  pci_device->device_id_ = *reinterpret_cast<uint16_t *>(
+  pci_device->device_id_ = *reinterpret_cast<uint16_t*>(
       config_data + static_cast<int>(ConfigByteOffset::DEVICE_ID));
-  pci_device->status_ = *reinterpret_cast<uint16_t *>(
+  pci_device->status_ = *reinterpret_cast<uint16_t*>(
       config_data + static_cast<int>(ConfigByteOffset::STATUS));
-  pci_device->revision_ = *reinterpret_cast<uint8_t *>(
+  pci_device->revision_ = *reinterpret_cast<uint8_t*>(
       config_data + static_cast<int>(ConfigByteOffset::REVISION));
-  pci_device->program_if_ = *reinterpret_cast<uint8_t *>(
+  pci_device->program_if_ = *reinterpret_cast<uint8_t*>(
       config_data + static_cast<int>(ConfigByteOffset::PROGRAM_IF));
-  pci_device->subclass_ = *reinterpret_cast<uint8_t *>(
+  pci_device->subclass_ = *reinterpret_cast<uint8_t*>(
       config_data + static_cast<int>(ConfigByteOffset::SUBCLASS));
-  pci_device->class_code_ = static_cast<ClassCode>(*reinterpret_cast<uint8_t *>(
+  pci_device->class_code_ = static_cast<ClassCode>(*reinterpret_cast<uint8_t*>(
       config_data + static_cast<int>(ConfigByteOffset::CLASS_CODE)));
 
   return pci_device;
@@ -204,7 +204,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
   }
 
   uint8_t next_pointer;
-  config.read(reinterpret_cast<char *>(&next_pointer), 1);
+  config.read(reinterpret_cast<char*>(&next_pointer), 1);
   if (config.fail()) {
     return Error{
         ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
@@ -223,7 +223,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
     }
 
     CapId cap_id;
-    config.read(reinterpret_cast<char *>(&cap_id), 1);
+    config.read(reinterpret_cast<char*>(&cap_id), 1);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading capability ID from offset " << std::hex
@@ -248,7 +248,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
     // };
     cap.data_offset = next_pointer + 2;
     capabilities.push_back(std::move(cap));
-    config.read(reinterpret_cast<char *>(&next_pointer), 1);
+    config.read(reinterpret_cast<char*>(&next_pointer), 1);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading next pointer of capability ID " << std::hex
@@ -284,7 +284,7 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
     }
 
     ECapId cap_id;
-    config.read(reinterpret_cast<char *>(&cap_id), 2);
+    config.read(reinterpret_cast<char*>(&cap_id), 2);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading extended capability ID from offset "
@@ -294,7 +294,7 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
     }
 
     uint16_t version_and_next_pointer;
-    config.read(reinterpret_cast<char *>(&version_and_next_pointer), 2);
+    config.read(reinterpret_cast<char*>(&version_and_next_pointer), 2);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading next pointer of capability ID " << std::hex
@@ -351,7 +351,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
     }
 
     ECapId current_cap_id;
-    config.read(reinterpret_cast<char *>(&current_cap_id), 2);
+    config.read(reinterpret_cast<char*>(&current_cap_id), 2);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading extended capability ID from offset "
@@ -361,7 +361,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
     }
 
     uint16_t version_and_next_pointer;
-    config.read(reinterpret_cast<char *>(&version_and_next_pointer), 2);
+    config.read(reinterpret_cast<char*>(&version_and_next_pointer), 2);
     if (config.fail()) {
       std::ostringstream msgstream;
       msgstream << "Error reading next pointer of capability ID " << std::hex
@@ -387,7 +387,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
         }
       }
 
-      config.read(reinterpret_cast<char *>(data.data()), data.size());
+      config.read(reinterpret_cast<char*>(data.data()), data.size());
       if (config.fail()) {
         std::ostringstream msgstream;
         msgstream << "Error reading data of capability ID " << std::hex << "0x"
@@ -416,9 +416,9 @@ nx::Result<ExtendedCapability> Device::GetExtendedCapability(
   if (!caps_or_error.has_value()) {
     return caps_or_error.error();
   }
-  auto &caps = caps_or_error.value();
+  auto& caps = caps_or_error.value();
 
-  for (auto &ecap : caps) {
+  for (auto& ecap : caps) {
     if (ecap.id == cap_id) {
       return ecap;
     }
@@ -437,7 +437,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
   if (!cap_or_error.has_value()) {
     return cap_or_error.error();
   }
-  auto &ecap = cap_or_error.value();
+  auto& ecap = cap_or_error.value();
 
   auto config_path = GetConfigFilePath(domain_, bus_, device_, func_);
   std::fstream config(config_path,
@@ -456,7 +456,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
     return Error{ErrorCode::PCI_ERROR_WRITING_CONFIG, msgstream.str()};
   }
 
-  config.write(reinterpret_cast<char *>(data.data()), data.size());
+  config.write(reinterpret_cast<char*>(data.data()), data.size());
   if (config.fail()) {
     std::ostringstream msgstream;
     msgstream << "Error writing to the extended capability data at " << std::hex

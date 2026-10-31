@@ -22,7 +22,7 @@
 #include "nx/pci/cap_id.h"
 #include "nx/pci/pci.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc != 5) {
     std::cout << "Usage:\n"
               << "  read_ecap <BDF string> <ECap ID> <Offset> <Size>\n"
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   uint32_t data = 0;
   auto may_be_error = device->ReadExtendedCapabilityData(
       static_cast<nx::pci::ECapId>(ecap_id_val), offset,
-      std::span<uint8_t>(reinterpret_cast<uint8_t *>(&data), size));
+      std::span<uint8_t>(reinterpret_cast<uint8_t*>(&data), size));
   if (may_be_error.has_value()) {
     auto error = may_be_error.value();
     std::cout << "Error reading extended capability data: " << error.message()

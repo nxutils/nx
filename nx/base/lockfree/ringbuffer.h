@@ -42,17 +42,17 @@ class RingBuffer {
 
   ~RingBuffer() = default;
 
-  RingBuffer(const RingBuffer &) = delete;
-  RingBuffer &operator=(const RingBuffer &) = delete;
-  RingBuffer(RingBuffer &&) = delete;
-  RingBuffer &operator=(RingBuffer &&) = delete;
+  RingBuffer(const RingBuffer&) = delete;
+  RingBuffer& operator=(const RingBuffer&) = delete;
+  RingBuffer(RingBuffer&&) = delete;
+  RingBuffer& operator=(RingBuffer&&) = delete;
 
   /// Write an item into the ring buffer (producer only).
   ///
   /// Returns true if the item was successfully written, false if the buffer
   /// is full.
   template <typename U = T>
-  bool Write(U &&value) {
+  bool Write(U&& value) {
     if (size_.load(std::memory_order::relaxed) == N) {
       return false;
     }
@@ -67,7 +67,7 @@ class RingBuffer {
   ///
   /// Returns true if an item was successfully read, false if the buffer
   /// is empty.
-  bool Read(T &value) {
+  bool Read(T& value) {
     if (size_.load(std::memory_order::relaxed) == 0) {
       return false;
     }
@@ -87,7 +87,6 @@ class RingBuffer {
   /// Get the capacity of the ring buffer.
   static constexpr size_t kCapacity = N;
   static constexpr size_t capacity() { return N; }
-  size_t Capacity() const { return N; }
 
   /// Get the approximate size of the ring buffer.
   size_t Size() const { return size_.load(std::memory_order::relaxed); }

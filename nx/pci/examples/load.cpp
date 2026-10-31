@@ -22,7 +22,7 @@
 #include "nx/pci/class_code.h"
 #include "nx/pci/pci.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc != 2) {
     std::cout << "Usage:\n"
               << "  load <BDF string>\n"
@@ -52,13 +52,13 @@ int main(int argc, char *argv[]) {
   if (device->HasCapabilitiesList()) {
     auto caps_or_error = device->GetCapabilities();
     if (!caps_or_error.has_value()) {
-      auto &error = caps_or_error.error();
+      auto& error = caps_or_error.error();
       std::cout << "Error reading capabilities: " << error.message() << '\n';
       return 1;
     }
     std::cout << "List of normal capabilities:\n";
-    auto &capabilities = caps_or_error.value();
-    for (auto &cap : capabilities) {
+    auto& capabilities = caps_or_error.value();
+    for (auto& cap : capabilities) {
       std::cout << std::hex << "Offset: 0x" << cap.offset << " ID: 0x"
                 << static_cast<uint32_t>(cap.id) << " - "
                 << GetCapIdDescription(cap.id) << '\n';
@@ -67,14 +67,14 @@ int main(int argc, char *argv[]) {
 
   auto extended_caps_or_error = device->GetExtendedCapabilities();
   if (!extended_caps_or_error.has_value()) {
-    auto &error = extended_caps_or_error.error();
+    auto& error = extended_caps_or_error.error();
     std::cout << "Error reading capabilities: " << error.message() << '\n';
     return 1;
   }
 
   std::cout << "List of extended capabilities:\n";
-  auto &extended_capabilities = extended_caps_or_error.value();
-  for (auto &ecap : extended_capabilities) {
+  auto& extended_capabilities = extended_caps_or_error.value();
+  for (auto& ecap : extended_capabilities) {
     std::cout << std::hex << "Offset: 0x" << ecap.offset << " ID: 0x"
               << static_cast<uint32_t>(ecap.id) << " [v" << std::dec
               << static_cast<uint32_t>(ecap.version) << "] - "

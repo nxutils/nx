@@ -78,7 +78,7 @@ class Device {
   /// where "dddd[d]" is a 16-bit or 20-bit of domain number, BB is a 8-bit
   /// bus number, DD is a 8-bit device number and F is a 4-bit function
   /// number all specified in hexadecimal digits.
-  static nx::Result<std::unique_ptr<Device>> Load(const std::string &bdf);
+  static nx::Result<std::unique_ptr<Device>> Load(const std::string& bdf);
 
   /// Load device using the given domain, bus, device and function numbers.
   static nx::Result<std::unique_ptr<Device>> Load(uint32_t domain, uint8_t bus,

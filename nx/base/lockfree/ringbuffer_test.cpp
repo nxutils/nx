@@ -24,7 +24,7 @@
 
 TEST(RingBufferTest, Construct) {
   nx::lockfree::RingBuffer<int, 8> rb;
-  EXPECT_EQ(rb.Capacity(), 8u);
+  EXPECT_EQ(rb.capacity(), 8u);
   EXPECT_TRUE(rb.Empty());
   EXPECT_FALSE(rb.Full());
   EXPECT_EQ(rb.Size(), 0u);

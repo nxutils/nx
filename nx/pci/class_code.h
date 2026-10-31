@@ -50,7 +50,7 @@ enum class ClassCode : uint8_t {
 
 struct ClassCodeAndDescription {
   ClassCode code;
-  const char *description;
+  const char* description;
 };
 
 constexpr ClassCodeAndDescription CLASS_CODE_DESCRIPTION[] = {
@@ -80,7 +80,7 @@ constexpr ClassCodeAndDescription CLASS_CODE_DESCRIPTION[] = {
 };
 
 constexpr std::string_view GetClassCodeDescription(ClassCode code) {
-  for (auto &code_and_description : CLASS_CODE_DESCRIPTION) {
+  for (auto& code_and_description : CLASS_CODE_DESCRIPTION) {
     if (code_and_description.code == code) {
       return code_and_description.description;
     }

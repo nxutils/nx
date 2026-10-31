@@ -42,11 +42,11 @@ class Error {
  public:
   Error(ErrorCode code) : code_(code) {}
 
-  Error(ErrorCode code, const std::string &msg) : code_(code), msg_(msg) {}
+  Error(ErrorCode code, const std::string& msg) : code_(code), msg_(msg) {}
 
   ErrorCode code() const { return code_; }
 
-  const std::string &message() const { return msg_; }
+  const std::string& message() const { return msg_; }
 
  private:
   ErrorCode code_;

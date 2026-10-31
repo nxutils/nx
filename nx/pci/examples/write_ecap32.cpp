@@ -23,7 +23,7 @@
 #include "nx/pci/cap_id.h"
 #include "nx/pci/pci.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc != 5) {
     std::cout << "Usage:\n"
               << "  write_ecap32 <BDF string> <ECap ID> <Offset> <Value>\n"
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
   uint16_t offset = std::stoul(argv[3], nullptr, 0);
   uint32_t value = std::stoul(argv[4], nullptr, 0);
 
-  std::span<uint8_t> data(reinterpret_cast<uint8_t *>(&value), sizeof(value));
+  std::span<uint8_t> data(reinterpret_cast<uint8_t*>(&value), sizeof(value));
 
   auto may_be_error = device->WriteExtendedCapabilityData(
       static_cast<nx::pci::ECapId>(ecap_id_val), offset, data);

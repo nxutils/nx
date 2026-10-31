@@ -34,13 +34,13 @@ template <typename V>
 class Result {
  public:
   /// Construct a successful result by copying the value.
-  Result(const V &v) : val_or_error_(v) {}
+  Result(const V& v) : val_or_error_(v) {}
 
   /// Construct a successful result by moving the value.
-  Result(V &&v) : val_or_error_(std::move(v)) {}
+  Result(V&& v) : val_or_error_(std::move(v)) {}
 
   /// Construct an error result.
-  Result(const Error &e) : val_or_error_(std::unexpected(e)) {}
+  Result(const Error& e) : val_or_error_(std::unexpected(e)) {}
 
   /// Check if the object represents a successful result.
   ///
@@ -61,10 +61,10 @@ class Result {
   bool is_error() const { return !has_value(); }
 
   /// Return the successful value.
-  V &value() { return val_or_error_.value(); }
+  V& value() { return val_or_error_.value(); }
 
   /// Return the error value.
-  Error &error() { return val_or_error_.error(); }
+  Error& error() { return val_or_error_.error(); }
 
  private:
   std::expected<V, Error> val_or_error_;
@@ -81,20 +81,20 @@ class BoolResult {
   BoolResult(bool value) : val_(value) {}
 
   /// Construct a boolean result with an associated message `msg`.
-  BoolResult(bool value, const std::string &msg) : val_(value), msg_(msg) {}
+  BoolResult(bool value, const std::string& msg) : val_(value), msg_(msg) {}
 
-  BoolResult(const BoolResult &) = default;
-  BoolResult(BoolResult &&) = default;
+  BoolResult(const BoolResult&) = default;
+  BoolResult(BoolResult&&) = default;
   ~BoolResult() = default;
 
-  BoolResult &operator=(const BoolResult &rhs) = default;
-  BoolResult &operator=(BoolResult &&rhs) = default;
+  BoolResult& operator=(const BoolResult& rhs) = default;
+  BoolResult& operator=(BoolResult&& rhs) = default;
 
   /// Check if the object represents a `true` value.
   operator bool() const { return val_; }
 
   /// Return the associated message.
-  const std::string &message() const { return msg_; }
+  const std::string& message() const { return msg_; }
 
  private:
   bool val_;

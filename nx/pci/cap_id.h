@@ -94,7 +94,7 @@ enum class CapId : uint8_t {
   CAP_ID_MAX = 0x16
 };
 
-constexpr const char *CAP_ID_DESCRIPTION[] = {
+constexpr const char* CAP_ID_DESCRIPTION[] = {
     "Null",
     "Power Management",
     "AGP (Accelerated Graphics Port)",
@@ -186,7 +186,7 @@ enum class ECapId : uint16_t {
   ECAP_ID_MAX = 0x3b,
 };
 
-constexpr const char *EXT_CAP_ID_DESCRIPTION[] = {
+constexpr const char* EXT_CAP_ID_DESCRIPTION[] = {
     "Null Capability",
     "Advanced Error Reporting",
     "Virtual Channel",
