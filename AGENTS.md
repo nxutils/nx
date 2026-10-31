@@ -4,7 +4,7 @@
 
 Bazel is the build system used by everything in the repo without exceptions.
 See https://bazel.build/ for information about bazel. Execute all bazel commands
-from repo root directory.
+from the repo root directory.
 
 ## License
 
@@ -44,7 +44,7 @@ language is as follows:
   To ensure that a C++ source file follows the C++ style, run the following:
   ```
   bazel build @llvm_toolchain//:clang-format
-  ./bazel-bin/external/toolchains_llvm++llvm+llvm_toolchain/clang-format -i -style Google relative/path/to/file
+  ./bazel-bin/external/toolchains_llvm++llvm+llvm_toolchain/clang-format -i relative/path/to/file
   ```
 * Python - Use PEP 8 style with one exception.
   Link to PEP 8: https://peps.python.org/pep-0008/. Exception: Limit line
@@ -86,4 +86,24 @@ and listed in the following order.
 * Blank line.
 * An optional section titled "STYLE EXCEPTIONS". This section should be listed
   only if the change does not adhere to the required style or deviates from
-  allowed idioms.
+  allowed idioms. Under this section, each style exception introduced by the
+  commit should explained in detail in a bulleted list.
+
+## Testing
+
+### Adding tests
+
+New tests have to be added under the following circumstances:
+
+* A bug is being fixed: In this case, a test which would fail if the bug is
+  not fixed has to be added. In other words, a test to verify that the code
+  actually fixes the bug has to be added.
+* A new feature is added: In this case, tests which test the new feature
+  have to be added. Tests which cover all of the new or modified code paths
+  should be added.
+
+### Running tests
+
+If code is being modified, then run all of the associated tests and include
+a report of those tests in the commit message. See the commit message style
+for more information on how to add test report in a commit message.
