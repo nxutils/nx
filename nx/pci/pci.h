@@ -25,10 +25,9 @@
 #include <string>
 #include <vector>
 
-#include "nx/base/error.h"
-#include "nx/base/result.h"
 #include "nx/pci/cap_id.h"
 #include "nx/pci/class_code.h"
+#include "nx/pci/result.h"
 
 namespace nx::pci {
 
@@ -78,11 +77,11 @@ class Device {
   /// where "dddd[d]" is a 16-bit or 20-bit of domain number, BB is a 8-bit
   /// bus number, DD is a 8-bit device number and F is a 4-bit function
   /// number all specified in hexadecimal digits.
-  static nx::Result<std::unique_ptr<Device>> Load(const std::string& bdf);
+  static Result<std::unique_ptr<Device>> Load(const std::string& bdf);
 
   /// Load device using the given domain, bus, device and function numbers.
-  static nx::Result<std::unique_ptr<Device>> Load(uint32_t domain, uint8_t bus,
-                                                  uint8_t device, uint8_t func);
+  static Result<std::unique_ptr<Device>> Load(uint32_t domain, uint8_t bus,
+                                              uint8_t device, uint8_t func);
 
   /// Return the domain number.
   uint32_t domain() const { return domain_; }
@@ -121,26 +120,26 @@ class Device {
   bool HasCapabilitiesList() const;
 
   /// Return the list of normal capabilities supported by the device.
-  nx::Result<std::vector<Capability>> GetCapabilities() const;
+  Result<std::vector<Capability>> GetCapabilities() const;
 
   /// Return the list of extended capabilities supported by the device.
-  nx::Result<std::vector<ExtendedCapability>> GetExtendedCapabilities() const;
+  Result<std::vector<ExtendedCapability>> GetExtendedCapabilities() const;
 
   /// Return extended capability information for capability |cap_id|.
-  nx::Result<ExtendedCapability> GetExtendedCapability(ECapId cap_id) const;
+  Result<ExtendedCapability> GetExtendedCapability(ECapId cap_id) const;
 
   /// Return |size| bytes of data of the extended capability |cap_id|.
   ///
   /// The data is read from byte offset |offset| within the capability data.
   /// The offset size should not include the capability header - which means
   /// that the offset of the first byte after the capability header is 0.
-  std::optional<nx::Error> ReadExtendedCapabilityData(
+  std::optional<Error> ReadExtendedCapabilityData(
       ECapId cap_id, uint16_t offset, std::span<uint8_t> data) const;
 
   /// Write |data| to an extended capability register at offset |offset|.
   ///
   /// The data is written at an offset |offset| after the capability header.
-  std::optional<nx::Error> WriteExtendedCapabilityData(
+  std::optional<Error> WriteExtendedCapabilityData(
       ECapId cap_id, uint16_t offset, std::span<uint8_t> data) const;
 
  private:

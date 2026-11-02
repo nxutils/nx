@@ -28,9 +28,9 @@
 #include <string>
 #include <string_view>
 
-#include "nx/base/result.h"
 #include "nx/pci/cap_id.h"
 #include "nx/pci/class_code.h"
+#include "nx/pci/result.h"
 
 namespace {
 
@@ -83,22 +83,20 @@ std::filesystem::path GetConfigFilePath(uint32_t domain, uint8_t bus,
 
 namespace nx::pci {
 
-nx::Result<std::unique_ptr<Device>> Device::Load(const std::string& bdf) {
+Result<std::unique_ptr<Device>> Device::Load(const std::string& bdf) {
   size_t first_colon = bdf.find(":");
   if (first_colon < 4 || first_colon > 5) {
-    return Error{ErrorCode::PCI_INVALID_DOMAIN_NUMBER,
+    return Error{ErrorCode::kInvalidDomainNumber,
                  "Invalid domain number in " + bdf};
   }
   if (bdf.size() != first_colon + 8) {
-    return Error{ErrorCode::PCI_INVALID_BDF_STRING,
-                 "Invalid BDF string " + bdf};
+    return Error{ErrorCode::kInvalidBdfString, "Invalid BDF string " + bdf};
   }
   if (bdf[first_colon + 3] != ':') {
-    return Error{ErrorCode::PCI_INVALID_BUS_NUMBER,
-                 "Invalid bus number in " + bdf};
+    return Error{ErrorCode::kInvalidBusNumber, "Invalid bus number in " + bdf};
   }
   if (bdf[first_colon + 6] != '.') {
-    return Error{ErrorCode::PCI_INVALID_FUNCTION_NUMBER,
+    return Error{ErrorCode::kInvalidFunctionNumber,
                  "Invalid function number in " + bdf};
   }
 
@@ -117,21 +115,21 @@ nx::Result<std::unique_ptr<Device>> Device::Load(const std::string& bdf) {
   return Load(domain, bus, device, func);
 }
 
-nx::Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
-                                                 uint8_t device, uint8_t func) {
+Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
+                                             uint8_t device, uint8_t func) {
   // Domain value should fit in 5-nibbles (20 bits).
   if (domain > 0xFFFFF) {
     std::ostringstream msgstream;
     msgstream << "Domain value " << std::hex << domain
               << " does not fit in 20 bits";
-    return Error{ErrorCode::PCI_INVALID_DOMAIN_NUMBER, msgstream.str()};
+    return Error{ErrorCode::kInvalidDomainNumber, msgstream.str()};
   }
 
   if (func > 0xF) {
     std::ostringstream msgstream;
     msgstream << "Device function value " << std::hex << func
               << " does not fit in 4 bits";
-    return Error{ErrorCode::PCI_INVALID_FUNCTION_NUMBER, msgstream.str()};
+    return Error{ErrorCode::kInvalidFunctionNumber, msgstream.str()};
   }
 
   const auto device_path = GetDevicePath(domain, bus, device, func);
@@ -140,7 +138,7 @@ nx::Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
   if (!std::filesystem::exists(device_path, err)) {
     auto pci_devices_path = GetPciDevicesPath().native();
     return Error{
-        ErrorCode::PCI_DEVICE_NOT_FOUND,
+        ErrorCode::kDeviceNotFound,
         "PCI device " + bdf_string + " not found in " + pci_devices_path};
   }
 
@@ -149,7 +147,7 @@ nx::Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
   std::ifstream config(GetConfigFilePath(domain, bus, device, func),
                        std::ios::binary | std::ios::in);
   if (!config.is_open()) {
-    return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+    return Error{ErrorCode::kErrorReadingConfigFile,
                  "Error opening config file for " + bdf_string};
   }
   // We read the first 16 bytes from the config file - This is enough to gather
@@ -157,7 +155,7 @@ nx::Result<std::unique_ptr<Device>> Device::Load(uint32_t domain, uint8_t bus,
   uint8_t config_data[16];
   config.read(reinterpret_cast<char*>(config_data), sizeof(config_data));
   if (config.fail()) {
-    return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+    return Error{ErrorCode::kErrorReadingConfigFile,
                  "Error reading config file for " + bdf_string};
   }
   config.close();
@@ -188,18 +186,18 @@ bool Device::HasCapabilitiesList() const {
   return (STATUS_CAPABILITIES_MASK & status_) != 0;
 }
 
-nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
+Result<std::vector<Capability>> Device::GetCapabilities() const {
   auto config_path = GetConfigFilePath(domain_, bus_, device_, func_);
   std::ifstream config(config_path, std::ios::binary | std::ios::in);
   if (!config.is_open()) {
-    return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+    return Error{ErrorCode::kErrorReadingConfigFile,
                  "Error opening config file " + config_path.native()};
   }
 
   config.seekg(int(ConfigByteOffset::CAPABILITIES_POINTER));
   if (config.fail()) {
     return Error{
-        ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+        ErrorCode::kErrorReadingConfigFile,
         "Error seeking to the capabilities pointer in " + config_path.native()};
   }
 
@@ -207,7 +205,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
   config.read(reinterpret_cast<char*>(&next_pointer), 1);
   if (config.fail()) {
     return Error{
-        ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+        ErrorCode::kErrorReadingConfigFile,
         "Error reading capabilities pointer in " + config_path.native()};
   }
 
@@ -219,7 +217,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
       msgstream << "Error seeking to the next capability at " << std::hex
                 << "0x" << static_cast<uint32_t>(next_pointer) << " in "
                 << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     CapId cap_id;
@@ -229,7 +227,7 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
       msgstream << "Error reading capability ID from offset " << std::hex
                 << "0x" << static_cast<uint32_t>(next_pointer) << " in "
                 << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     Capability cap;
@@ -255,18 +253,18 @@ nx::Result<std::vector<Capability>> Device::GetCapabilities() const {
                 << "0x" << static_cast<uint32_t>(cap.id) << " ("
                 << GetCapIdDescription(cap.id) << ") in "
                 << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
   }
   return capabilities;
 }
 
-nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
+Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
     const {
   auto config_path = GetConfigFilePath(domain_, bus_, device_, func_);
   std::ifstream config(config_path, std::ios::binary | std::ios::in);
   if (!config.is_open()) {
-    return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+    return Error{ErrorCode::kErrorReadingConfigFile,
                  "Error opening config file " + config_path.native()};
   }
 
@@ -280,7 +278,7 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
       msgstream << "Error seeking to the next extended capability at "
                 << std::hex << "0x" << static_cast<uint32_t>(next_pointer)
                 << " in " << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     ECapId cap_id;
@@ -290,7 +288,7 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
       msgstream << "Error reading extended capability ID from offset "
                 << std::hex << "0x" << static_cast<uint32_t>(next_pointer)
                 << " in " << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     uint16_t version_and_next_pointer;
@@ -301,7 +299,7 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
                 << "0x" << static_cast<uint32_t>(cap_id) << " ("
                 << GetECapIdDescription(cap_id) << ") in "
                 << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
     ExtendedCapability cap;
     cap.id = cap_id;
@@ -329,12 +327,12 @@ nx::Result<std::vector<ExtendedCapability>> Device::GetExtendedCapabilities()
   return capabilities;
 }
 
-std::optional<nx::Error> Device::ReadExtendedCapabilityData(
+std::optional<Error> Device::ReadExtendedCapabilityData(
     ECapId cap_id, uint16_t offset, std::span<uint8_t> data) const {
   auto config_path = GetConfigFilePath(domain_, bus_, device_, func_);
   std::ifstream config(config_path, std::ios::binary | std::ios::in);
   if (!config.is_open()) {
-    return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
+    return Error{ErrorCode::kErrorReadingConfigFile,
                  "Error opening config file " + config_path.native()};
   }
 
@@ -347,7 +345,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
       msgstream << "Error seeking to the next extended capability at "
                 << std::hex << "0x" << static_cast<uint32_t>(next_pointer)
                 << " in " << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     ECapId current_cap_id;
@@ -357,7 +355,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
       msgstream << "Error reading extended capability ID from offset "
                 << std::hex << "0x" << static_cast<uint32_t>(next_pointer)
                 << " in " << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     uint16_t version_and_next_pointer;
@@ -368,7 +366,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
                 << "0x" << static_cast<uint32_t>(current_cap_id) << " ("
                 << GetECapIdDescription(current_cap_id) << ") in "
                 << config_path.native();
-      return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+      return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
     }
 
     if (cap_id == current_cap_id) {
@@ -382,8 +380,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
                     << std::hex << "0x" << static_cast<uint32_t>(current_cap_id)
                     << " (" << GetECapIdDescription(current_cap_id) << ") in "
                     << config_path.native();
-          return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE,
-                       msgstream.str()};
+          return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
         }
       }
 
@@ -394,7 +391,7 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
                   << static_cast<uint32_t>(current_cap_id) << " ("
                   << GetECapIdDescription(current_cap_id) << ") in "
                   << config_path.native();
-        return Error{ErrorCode::PCI_ERROR_READING_CONFIG_FILE, msgstream.str()};
+        return Error{ErrorCode::kErrorReadingConfigFile, msgstream.str()};
       }
       return std::nullopt;
     }
@@ -407,11 +404,10 @@ std::optional<nx::Error> Device::ReadExtendedCapabilityData(
             << static_cast<uint32_t>(cap_id) << " ("
             << GetECapIdDescription(cap_id) << ") not found in "
             << config_path.native();
-  return Error{ErrorCode::PCI_EXTENDED_CAP_NOT_FOUND, msgstream.str()};
+  return Error{ErrorCode::kExtendedCapNotFound, msgstream.str()};
 }
 
-nx::Result<ExtendedCapability> Device::GetExtendedCapability(
-    ECapId cap_id) const {
+Result<ExtendedCapability> Device::GetExtendedCapability(ECapId cap_id) const {
   auto caps_or_error = GetExtendedCapabilities();
   if (!caps_or_error.has_value()) {
     return caps_or_error.error();
@@ -428,10 +424,10 @@ nx::Result<ExtendedCapability> Device::GetExtendedCapability(
   msgstream << "Extended capability 0x" << std::hex
             << static_cast<uint32_t>(cap_id) << " ("
             << GetECapIdDescription(cap_id) << ") not found";
-  return Error{ErrorCode::PCI_EXTENDED_CAP_NOT_FOUND, msgstream.str()};
+  return Error{ErrorCode::kExtendedCapNotFound, msgstream.str()};
 }
 
-std::optional<nx::Error> Device::WriteExtendedCapabilityData(
+std::optional<Error> Device::WriteExtendedCapabilityData(
     ECapId cap_id, uint16_t offset, std::span<uint8_t> data) const {
   auto cap_or_error = GetExtendedCapability(cap_id);
   if (!cap_or_error.has_value()) {
@@ -443,7 +439,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
   std::fstream config(config_path,
                       std::ios::binary | std::ios::in | std::ios::out);
   if (!config.is_open()) {
-    return Error{ErrorCode::PCI_ERROR_WRITING_CONFIG,
+    return Error{ErrorCode::kErrorWritingConfig,
                  "Error opening config file " + config_path.native()};
   }
 
@@ -453,7 +449,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
     std::ostringstream msgstream;
     msgstream << "Error seeking to the extended capability data at " << std::hex
               << "0x" << data_offset << " in " << config_path.native();
-    return Error{ErrorCode::PCI_ERROR_WRITING_CONFIG, msgstream.str()};
+    return Error{ErrorCode::kErrorWritingConfig, msgstream.str()};
   }
 
   config.write(reinterpret_cast<char*>(data.data()), data.size());
@@ -461,7 +457,7 @@ std::optional<nx::Error> Device::WriteExtendedCapabilityData(
     std::ostringstream msgstream;
     msgstream << "Error writing to the extended capability data at " << std::hex
               << "0x" << data_offset << " in " << config_path.native();
-    return Error{ErrorCode::PCI_ERROR_WRITING_CONFIG, msgstream.str()};
+    return Error{ErrorCode::kErrorWritingConfig, msgstream.str()};
   }
 
   config.close();

@@ -32,23 +32,27 @@ class MovableType {
   int a_;
 };
 
+enum class TestErrorCode : uint16_t {
+  kFileNotFound,
+};
+
 TEST(ResultTest, API) {
-  nx::Result<uint64_t> success(123);
+  nx::Result<uint64_t, TestErrorCode> success(123);
   ASSERT_TRUE(static_cast<bool>(success));
   ASSERT_TRUE(success);
   ASSERT_TRUE(success.has_value());
   ASSERT_FALSE(success.is_error());
   ASSERT_EQ(success.value(), 123);
 
-  nx::Result<uint64_t> failure(nx::ErrorCode::FILE_NOT_FOUND);
+  nx::Result<uint64_t, TestErrorCode> failure(TestErrorCode::kFileNotFound);
   ASSERT_FALSE(static_cast<bool>(failure));
   ASSERT_FALSE(failure);
   ASSERT_FALSE(failure.has_value());
   ASSERT_TRUE(failure.is_error());
-  ASSERT_EQ(failure.error().code(), nx::ErrorCode::FILE_NOT_FOUND);
+  ASSERT_EQ(failure.error().code(), TestErrorCode::kFileNotFound);
 
   MovableType mt(321);
-  nx::Result<MovableType> mt_success(std::move(mt));
+  nx::Result<MovableType, TestErrorCode> mt_success(std::move(mt));
   ASSERT_TRUE(static_cast<bool>(mt_success));
   ASSERT_TRUE(mt_success);
   ASSERT_TRUE(mt_success.has_value());

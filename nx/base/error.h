@@ -20,36 +20,28 @@
 #define NX_BASE_ERROR_H__
 
 #include <string>
+#include <type_traits>
 
 namespace nx {
 
-enum class ErrorCode : uint32_t {
-  FILE_NOT_FOUND,
-
-  // PCI related errors.
-  PCI_DEVICE_NOT_FOUND,
-  PCI_INVALID_BDF_STRING,
-  PCI_INVALID_BUS_NUMBER,
-  PCI_INVALID_DEVICE_NUMBER,
-  PCI_INVALID_DOMAIN_NUMBER,
-  PCI_INVALID_FUNCTION_NUMBER,
-  PCI_ERROR_READING_CONFIG_FILE,
-  PCI_ERROR_WRITING_CONFIG,
-  PCI_EXTENDED_CAP_NOT_FOUND,
-};
-
+/// An error with an error code of type |ErrorType| and an optional message.
+///
+/// |ErrorType| should be an enum type describing the possible error codes.
+template <typename ErrorType>
 class Error {
+  static_assert(std::is_enum_v<ErrorType>, "ErrorType should be an enum type");
+
  public:
-  Error(ErrorCode code) : code_(code) {}
+  Error(ErrorType code) : code_(code) {}
 
-  Error(ErrorCode code, const std::string& msg) : code_(code), msg_(msg) {}
+  Error(ErrorType code, const std::string& msg) : code_(code), msg_(msg) {}
 
-  ErrorCode code() const { return code_; }
+  ErrorType code() const { return code_; }
 
   const std::string& message() const { return msg_; }
 
  private:
-  ErrorCode code_;
+  ErrorType code_;
   std::string msg_;
 };
 
