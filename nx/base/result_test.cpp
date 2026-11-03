@@ -20,6 +20,8 @@
 
 #include <gtest/gtest.h>
 
+#include "nx/base/error.h"
+
 class MovableType {
  public:
   explicit MovableType(int a) : a_(a) {}
@@ -36,15 +38,18 @@ enum class TestErrorCode : uint16_t {
   kFileNotFound,
 };
 
+using TestError = nx::Error<TestErrorCode>;
+
 TEST(ResultTest, API) {
-  nx::Result<uint64_t, TestErrorCode> success(123);
+  nx::Result<uint64_t, TestError> success(123);
   ASSERT_TRUE(static_cast<bool>(success));
   ASSERT_TRUE(success);
   ASSERT_TRUE(success.has_value());
   ASSERT_FALSE(success.is_error());
   ASSERT_EQ(success.value(), 123);
 
-  nx::Result<uint64_t, TestErrorCode> failure(TestErrorCode::kFileNotFound);
+  nx::Result<uint64_t, TestError> failure{
+      TestError{TestErrorCode::kFileNotFound}};
   ASSERT_FALSE(static_cast<bool>(failure));
   ASSERT_FALSE(failure);
   ASSERT_FALSE(failure.has_value());
@@ -52,7 +57,7 @@ TEST(ResultTest, API) {
   ASSERT_EQ(failure.error().code(), TestErrorCode::kFileNotFound);
 
   MovableType mt(321);
-  nx::Result<MovableType, TestErrorCode> mt_success(std::move(mt));
+  nx::Result<MovableType, TestError> mt_success(std::move(mt));
   ASSERT_TRUE(static_cast<bool>(mt_success));
   ASSERT_TRUE(mt_success);
   ASSERT_TRUE(mt_success.has_value());
@@ -60,6 +65,20 @@ TEST(ResultTest, API) {
   ASSERT_EQ(mt_success.value().GetA(), 321);
   // Original object was moved into the result value.
   ASSERT_EQ(mt.GetA(), 0);
+}
+
+TEST(ResultTest, AnyErrorType) {
+  struct CustomError {
+    int code;
+  };
+
+  nx::Result<int, CustomError> success(7);
+  ASSERT_TRUE(success.has_value());
+  ASSERT_EQ(success.value(), 7);
+
+  nx::Result<int, CustomError> failure(CustomError{42});
+  ASSERT_TRUE(failure.is_error());
+  ASSERT_EQ(failure.error().code, 42);
 }
 
 TEST(BoolResultTest, API) {
