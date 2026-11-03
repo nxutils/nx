@@ -26,3 +26,13 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+cc_library(
+    name = "mapped_file",
+    srcs = ["mapped_file.cpp"],
+    hdrs = ["mapped_file.h"],
+    deps = [
+        ":base",
+    ],
+    visibility = ["//visibility:public"],
+)
