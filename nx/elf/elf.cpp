@@ -18,11 +18,12 @@
 
 #include "nx/elf/elf.h"
 
+#include <sys/mman.h>
+
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <system_error>
-#include <sys/mman.h>
 
 #include "nx/base/mapped_file.h"
 #include "nx/elf/result.h"
@@ -31,9 +32,8 @@ namespace nx::elf {
 
 Result<Elf> Elf::Load(const std::filesystem::path& path) {
   std::string path_str = path.native();
-  auto const kInvalidElfError = Error{
-      ErrorCode::kInvalidElfFile,
-      path_str + " is not a valid ELF file"};
+  auto const kInvalidElfError =
+      Error{ErrorCode::kInvalidElfFile, path_str + " is not a valid ELF file"};
 
   std::error_code ec;
 
@@ -53,13 +53,11 @@ Result<Elf> Elf::Load(const std::filesystem::path& path) {
 
   auto data = mapped_file.data();
   if (data.size() < sizeof(kMagic)) {
-    return Error{ErrorCode::kNotElfFile,
-                 path_str + " is not an ELF file"};
+    return Error{ErrorCode::kNotElfFile, path_str + " is not an ELF file"};
   }
   auto magic_data = data.subspan<0, sizeof(kMagic)>();
   if (std::memcmp(magic_data.data(), kMagic, sizeof(kMagic)) != 0) {
-    return Error{ErrorCode::kNotElfFile,
-                 path_str + " is not an ELF file"};
+    return Error{ErrorCode::kNotElfFile, path_str + " is not an ELF file"};
   }
 
   data = data.subspan<sizeof(kMagic)>();
@@ -78,7 +76,7 @@ Result<Elf> Elf::Load(const std::filesystem::path& path) {
   data = data.subspan<kIdentSize>();
   if (data.size() < sizeof(Type)) {
     return kInvalidElfError;
-  } 
+  }
   elf_hdr.type = *reinterpret_cast<Type*>(data.data());
 
   data = data.subspan(sizeof(Type));

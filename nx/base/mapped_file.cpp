@@ -16,20 +16,19 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include "nx/base/mapped_file.h"
+
 #include <errno.h>
 #include <fcntl.h>
-#include <filesystem>
 #include <sys/mman.h>
-#include <system_error>
 #include <unistd.h>
 
-#include "nx/base/mapped_file.h"
+#include <filesystem>
+#include <system_error>
 
 namespace nx {
 
-MappedFile::~MappedFile() {
-  UnMap();
-}
+MappedFile::~MappedFile() { UnMap(); }
 
 void MappedFile::UnMap() {
   if (data_ == nullptr) {
@@ -49,7 +48,8 @@ Result<MappedFile, std::string> MappedFile::Load(
 
   size_t size = std::filesystem::file_size(path, ec);
   if (ec) {
-    return "Error fetching the size of the file " + path.native() + ": " + ec.message();
+    return "Error fetching the size of the file " + path.native() + ": " +
+           ec.message();
   }
 
   std::string path_str = path.native();
@@ -57,18 +57,18 @@ Result<MappedFile, std::string> MappedFile::Load(
   if (fd < 0) {
     auto error_code = errno;
     errno = 0;
-    return "Error opening file " + path_str + ": '" + strerrorname_np(error_code) + "' "
-        + strerror(error_code);
+    return "Error opening file " + path_str + ": '" +
+           strerrorname_np(error_code) + "' " + strerror(error_code);
   }
 
-  void *res = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  void* res = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
   close(fd);
 
   if (res == MAP_FAILED) {
     auto error_code = errno;
     errno = 0;
-    return "Error mapping file " + path_str + ": '" + strerrorname_np(error_code) + "' "
-        + strerror(error_code);
+    return "Error mapping file " + path_str + ": '" +
+           strerrorname_np(error_code) + "' " + strerror(error_code);
   }
 
   return MappedFile(reinterpret_cast<uint8_t*>(res), size);

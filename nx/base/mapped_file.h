@@ -63,7 +63,8 @@ class MappedFile {
     return *this;
   }
 
-  static Result<MappedFile, std::string> Load(const std::filesystem::path& path);
+  static Result<MappedFile, std::string> Load(
+      const std::filesystem::path& path);
 
   static Result<MappedFile, std::string> Load(const std::string& path) {
     return Load(std::filesystem::path(path));
@@ -72,9 +73,7 @@ class MappedFile {
   std::span<uint8_t> data() const { return std::span<uint8_t>(data_, size_); }
 
  private:
-  MappedFile(uint8_t* data, size_t size)
-      : data_(data), size_(size) {
-  }
+  MappedFile(uint8_t* data, size_t size) : data_(data), size_(size) {}
 
   void UnMap();
 
