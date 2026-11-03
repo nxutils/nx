@@ -36,7 +36,7 @@ using Error = nx::Error<ErrorCode>;
 
 /// Result type for the ELF library.
 template <typename V>
-using Result = nx::Result<V, ErrorCode>;
+using Result = nx::Result<V, Error>;
 
 }  // namespace nx::elf
 

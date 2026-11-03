@@ -44,7 +44,7 @@ using Error = nx::Error<ErrorCode>;
 
 /// Result type for the PCI library.
 template <typename V>
-using Result = nx::Result<V, ErrorCode>;
+using Result = nx::Result<V, Error>;
 
 }  // namespace nx::pci
 
