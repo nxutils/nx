@@ -26,15 +26,15 @@
 
 namespace nx::elf {
 
-/// Error codes for the ELF library.
 enum class ErrorCode : uint32_t {
   kFileNotFound,
+  kFileLoadFailed,
+  kNotElfFile,
+  kInvalidElfFile,
 };
 
-/// Error type for the ELF library.
 using Error = nx::Error<ErrorCode>;
 
-/// Result type for the ELF library.
 template <typename V>
 using Result = nx::Result<V, Error>;
 

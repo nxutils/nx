@@ -22,12 +22,13 @@
 #include <cstdint>
 #include <filesystem>
 #include <string>
+#include <unordered_map>
 
+#include "nx/base/mapped_file.h"
 #include "nx/elf/result.h"
 
 namespace nx::elf {
 
-constexpr uint16_t kNumBaseElfTypes = 5;
 constexpr uint64_t kOsSpecificElfTypeStart = 0xfe00;
 constexpr uint64_t kOsSpecificElfTypeEnd = 0xfeff;
 constexpr uint64_t kProcSpecificElfTypeStart = 0xff00;
@@ -38,7 +39,7 @@ constexpr uint32_t kElfVersionCurrent = 0x1;
 
 constexpr uint8_t kHeaderVersionCurrent = 0x1;
 
-constexpr uint8_t kMagic[] = { '0x7f', 'E', 'L', 'F'};
+constexpr uint8_t kMagic[] = { 0x7f, 'E', 'L', 'F'};
 
 enum class ElfClass : uint8_t {
   /// 32-bit ELF object
@@ -279,13 +280,18 @@ struct Hdr {
   ElfClass elf_class;
 
   /// Endianness of the data in the ELF file.
-  Endianness endiannes;
+  Endianness endianness;
 
   /// Heder version.
   uint8_t header_version;
 
   /// OS ABI
   OsAbi os_abi;
+
+  /// Beyond this point, the fields are ordered exactly how they appear in
+  /// the ELF header. They are sized to accommodate values from both ELF32
+  /// and ELF64 so their cumulative size will be correct for ELF64 but not
+  /// for ELF32.
 
   /// Object file type
   Type type;
@@ -452,27 +458,25 @@ struct SectionHdr {
 class Elf {
  public:
   Elf(const Elf&) = delete;
-  Elf(Elf&&) = delete;
-  Elf& operator=(const Elf&) = delete;
-  Elf& operator=(Elf&&) = delete;
+  Elf(Elf&&) = default;
 
-  static Result<Elf> Load(const std::string& path);
+  Elf& operator=(const Elf&) = delete;
+  Elf& operator=(Elf&&) = default;
+
   static Result<Elf> Load(const std::filesystem::path& path);
 
- private:
-  Elf() = default;
-};
-
-inline Result<Elf> Elf::Load(const std::string& path) {
-  return Load(std::filesystem::path(path));
-}
-
-inline Result<Elf> Elf::Load(const std::filesystem::path& path) {
-  if (!std::filesystem::exists(path)) {
-    return Error(ErrorCode::kFileNotFound);
+  static Result<Elf> Load(const std::string& path) {
+    return Load(std::filesystem::path(path));
   }
-  return Elf();
-}
+
+ private:
+  Elf(Hdr hdr, MappedFile mapped_file);
+
+  Hdr hdr_;
+  nx::MappedFile mapped_file_;
+
+  std::unordered_map<std::string, SectionHdr> sections_;
+};
 
 }  // namespace nx::elf
 
